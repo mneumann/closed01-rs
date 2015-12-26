@@ -65,7 +65,7 @@ impl Closed01<f32> {
 
     #[inline(always)]
     /// The average of two values.
-    pub fn average(a: Closed01<f32>, b: Closed01<f32>) -> Closed01<f32> {
+    pub fn avg(a: Closed01<f32>, b: Closed01<f32>) -> Closed01<f32> {
         let avg = (a.get() + b.get()) / 2.0;
         debug_assert!(avg >= 0.0 && avg <= 1.0);
         Closed01(avg)
