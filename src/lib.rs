@@ -105,6 +105,22 @@ impl Closed01<f32> {
     pub fn approx_eq(self, other: Closed01<f32>, eps: Closed01<f32>) -> bool {
         self.distance(other) < eps
     }
+
+    #[inline(always)]
+    /// This scales `self` towards 1.0
+    pub fn scale_up(self, other: Closed01<f32>) -> Closed01<f32> {
+        let s = self.0 + (1.0 - self.0) * other.0;
+        debug_assert!(s >= 0.0 && s <= 1.0);
+        Closed01(s)
+    }
+
+    #[inline(always)]
+    /// This scales `self` towards 0.0
+    pub fn scale_down(self, other: Closed01<f32>) -> Closed01<f32> {
+        let s = self.0 - self.0 * other.0;
+        debug_assert!(s >= 0.0 && s <= 1.0);
+        Closed01(s)
+    }
 }
 
 impl Into<f32> for Closed01<f32> {
@@ -151,4 +167,28 @@ fn test_saturation() {
     let eps = Closed01::new(0.001);
     assert!(c.saturating_sub(b).approx_eq(Closed01::new(0.1), eps));
     assert!(c.saturating_sub(a).approx_eq(Closed01::new(0.2), eps));
+}
+
+#[test]
+fn test_scale_up() {
+    let a = Closed01::new(0.0);
+    let b = Closed01::new(1.0);
+    let c = Closed01::new(0.5);
+
+    assert_eq!(b, a.scale_up(b));
+    assert_eq!(c, a.scale_up(c));
+
+    assert_eq!(c, c.scale_up(a));
+    assert_eq!(b, c.scale_up(b));
+}
+
+#[test]
+fn test_scale_down() {
+    let a = Closed01::new(0.0);
+    let b = Closed01::new(1.0);
+    let c = Closed01::new(0.5);
+
+    assert_eq!(a, c.scale_down(b));
+    assert_eq!(b, b.scale_down(a));
+    assert_eq!(c, b.scale_down(c));
 }
