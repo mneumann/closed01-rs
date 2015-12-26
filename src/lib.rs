@@ -83,7 +83,7 @@ impl Closed01<f32> {
     }
 
     #[inline(always)]
-    /// Saturating add
+    /// Saturating sub
     pub fn saturating_sub(self, other: Closed01<f32>) -> Closed01<f32> {
         let mut sub = self.0 - other.0;
         if sub < 0.0 {
@@ -127,4 +127,22 @@ fn test_minmax() {
     assert_eq!(a, b.min(a));
     assert_eq!(b, a.max(b));
     assert_eq!(b, b.max(a));
+}
+
+#[test]
+fn test_saturation() {
+    let a = Closed01::new(0.4);
+    let b = Closed01::new(0.5);
+    let c = Closed01::new(0.6);
+
+    assert_eq!(0.9, a.saturating_add(b).get());
+    assert_eq!(1.0, a.saturating_add(c).get());
+    assert_eq!(1.0, b.saturating_add(c).get());
+
+    assert_eq!(0.0, a.saturating_sub(b).get());
+    assert_eq!(0.0, a.saturating_sub(c).get());
+    assert_eq!(0.0, b.saturating_sub(c).get());
+
+    assert!((c.saturating_sub(b).get() - 0.1).abs() < 0.001);
+    assert!((c.saturating_sub(a).get() - 0.2).abs() < 0.001);
 }
