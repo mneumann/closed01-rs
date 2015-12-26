@@ -1,5 +1,5 @@
 /// Encapsulates a floating point number in the range [0, 1] including both endpoints.
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Closed01<F>(F);
 
 impl Closed01<f32> {
@@ -20,6 +20,27 @@ impl Closed01<f32> {
     }
 
     #[inline(always)]
+    /// Returns the smaller of the two.
+    pub fn min(self, other: Closed01<f32>) -> Closed01<f32> {
+        if self.0 <= other.0 {
+            self
+        } else {
+            other
+        }
+    }
+
+    #[inline(always)]
+    /// Returns the greater of the two.
+    pub fn max(self, other: Closed01<f32>) -> Closed01<f32> {
+        if self.0 >= other.0 {
+            self
+        } else {
+            other
+        }
+    }
+
+    #[inline(always)]
+    /// Returns the distance between the two numbers.
     pub fn distance(self, other: Closed01<f32>) -> Closed01<f32> {
         let d = (self.0 - other.0).abs();
         debug_assert!(d >= 0.0 && d <= 1.0);
@@ -46,4 +67,14 @@ impl Closed01<f32> {
         debug_assert!(s >= 0.0 && s <= 1.0);
         Closed01(s)
     }
+}
+
+#[test]
+fn minmax() {
+    let a = Closed01::new(0.4);
+    let b = Closed01::new(0.5);
+    assert_eq!(a, a.min(b));
+    assert_eq!(a, b.min(a));
+    assert_eq!(b, a.max(b));
+    assert_eq!(b, b.max(a));
 }
