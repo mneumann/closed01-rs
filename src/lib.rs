@@ -1,3 +1,8 @@
+extern crate rand;
+
+use rand::{Rand, Rng};
+use rand::Closed01 as RandClosed01;
+
 /// Encapsulates a floating point number in the range [0, 1] including both endpoints.
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Closed01<F>(F);
@@ -72,6 +77,12 @@ impl Closed01<f32> {
 impl Into<f32> for Closed01<f32> {
     fn into(self) -> f32 {
         self.0
+    }
+}
+
+impl Rand for Closed01<f32> {
+    fn rand<R:Rng>(rng: &mut R) -> Closed01<f32> {
+        Closed01::new(RandClosed01::<f32>::rand(rng).0)
     }
 }
 
