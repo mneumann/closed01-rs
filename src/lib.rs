@@ -123,8 +123,8 @@ impl Closed01<f32> {
     }
 
     #[inline(always)]
-    /// Mirror the number at 0.5.
-    pub fn mirror(self) -> Closed01<f32> {
+    /// Invert the number (Mirror at 0.5).
+    pub fn invert(self) -> Closed01<f32> {
         let s = 1.0 - self.0;
         debug_assert!(s >= 0.0 && s <= 1.0);
         Closed01(s)
@@ -202,17 +202,17 @@ fn test_scale_down() {
 }
 
 #[test]
-fn test_mirror() {
+fn test_invert() {
     let a = Closed01::new(0.0);
     let b = Closed01::new(1.0);
     let c = Closed01::new(0.5);
 
-    assert_eq!(a, a.mirror().mirror());
-    assert_eq!(b, b.mirror().mirror());
-    assert_eq!(c, c.mirror().mirror());
+    assert_eq!(a, a.invert().invert());
+    assert_eq!(b, b.invert().invert());
+    assert_eq!(c, c.invert().invert());
 
 
-    assert_eq!(b, a.mirror());
-    assert_eq!(a, b.mirror());
-    assert_eq!(c, c.mirror());
+    assert_eq!(b, a.invert());
+    assert_eq!(a, b.invert());
+    assert_eq!(c, c.invert());
 }
