@@ -69,8 +69,19 @@ impl Closed01<f32> {
     }
 }
 
+impl Into<f32> for Closed01<f32> {
+    fn into(self) -> f32 {
+        self.0
+    }
+}
+
 #[test]
-fn minmax() {
+fn test_into() {
+    assert_eq!(0.5f32, Closed01::new(0.5).into());
+}
+
+#[test]
+fn test_minmax() {
     let a = Closed01::new(0.4);
     let b = Closed01::new(0.5);
     assert_eq!(a, a.min(b));
