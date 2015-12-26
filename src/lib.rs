@@ -20,6 +20,11 @@ impl Closed01<f32> {
     }
 
     #[inline(always)]
+    pub fn middle() -> Closed01<f32> {
+        Closed01(0.5)
+    }
+
+    #[inline(always)]
     pub fn one() -> Closed01<f32> {
         Closed01(1.0)
     }
@@ -67,7 +72,8 @@ impl Closed01<f32> {
     }
 
     #[inline(always)]
-    pub fn scale(&self, scalar: Closed01<f32>) -> Closed01<f32> {
+    /// Multiplies both numbers.
+    pub fn mul(&self, scalar: Closed01<f32>) -> Closed01<f32> {
         let s = self.get() * scalar.get();
         debug_assert!(s >= 0.0 && s <= 1.0);
         Closed01(s)
@@ -76,7 +82,7 @@ impl Closed01<f32> {
 
 impl Into<f32> for Closed01<f32> {
     fn into(self) -> f32 {
-        self.0
+        self.get()
     }
 }
 
