@@ -4,7 +4,7 @@ use rand::{Rand, Rng};
 use rand::Closed01 as RandClosed01;
 
 /// Encapsulates a floating point number in the range [0, 1] including both endpoints.
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, PartialEq, PartialOrd)]
 pub struct Closed01<F>(F);
 
 impl Closed01<f32> {
@@ -100,6 +100,11 @@ impl Closed01<f32> {
         debug_assert!(s >= 0.0 && s <= 1.0);
         Closed01(s)
     }
+
+    #[inline(always)]
+    pub fn approx_eq(self, other: Closed01<f32>, eps: Closed01<f32>) -> bool {
+        self.distance(other) < eps
+    }
 }
 
 impl Into<f32> for Closed01<f32> {
@@ -143,6 +148,7 @@ fn test_saturation() {
     assert_eq!(0.0, a.saturating_sub(c).get());
     assert_eq!(0.0, b.saturating_sub(c).get());
 
-    assert!((c.saturating_sub(b).get() - 0.1).abs() < 0.001);
-    assert!((c.saturating_sub(a).get() - 0.2).abs() < 0.001);
+    let eps = Closed01::new(0.001);
+    assert!(c.saturating_sub(b).approx_eq(Closed01::new(0.1), eps));
+    assert!(c.saturating_sub(a).approx_eq(Closed01::new(0.2), eps));
 }
