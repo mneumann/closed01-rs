@@ -94,8 +94,8 @@ impl Closed01<f32> {
     }
 
     #[inline(always)]
-    /// Multiplies both numbers.
-    pub fn mul(&self, scalar: Closed01<f32>) -> Closed01<f32> {
+    /// Multiplies both numbers
+    pub fn mul(self, scalar: Closed01<f32>) -> Closed01<f32> {
         let s = self.get() * scalar.get();
         debug_assert!(s >= 0.0 && s <= 1.0);
         Closed01(s)
