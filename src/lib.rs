@@ -72,6 +72,28 @@ impl Closed01<f32> {
     }
 
     #[inline(always)]
+    /// Saturating add
+    pub fn saturating_add(self, other: Closed01<f32>) -> Closed01<f32> {
+        let mut sum = self.0 + other.0;
+        if sum > 1.0 {
+            sum = 1.0;
+        }
+        debug_assert!(sum >= 0.0 && sum <= 1.0);
+        Closed01(sum)
+    }
+
+    #[inline(always)]
+    /// Saturating add
+    pub fn saturating_sub(self, other: Closed01<f32>) -> Closed01<f32> {
+        let mut sub = self.0 - other.0;
+        if sub < 0.0 {
+            sub = 0.0;
+        }
+        debug_assert!(sub >= 0.0 && sub <= 1.0);
+        Closed01(sub)
+    }
+
+    #[inline(always)]
     /// Multiplies both numbers.
     pub fn mul(&self, scalar: Closed01<f32>) -> Closed01<f32> {
         let s = self.get() * scalar.get();
@@ -87,7 +109,7 @@ impl Into<f32> for Closed01<f32> {
 }
 
 impl Rand for Closed01<f32> {
-    fn rand<R:Rng>(rng: &mut R) -> Closed01<f32> {
+    fn rand<R: Rng>(rng: &mut R) -> Closed01<f32> {
         Closed01::new(RandClosed01::<f32>::rand(rng).0)
     }
 }
