@@ -20,7 +20,7 @@ impl Closed01<f32> {
     }
 
     #[inline(always)]
-    pub fn middle() -> Closed01<f32> {
+    pub fn center() -> Closed01<f32> {
         Closed01(0.5)
     }
 
