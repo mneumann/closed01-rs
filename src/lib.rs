@@ -129,6 +129,16 @@ impl Closed01<f32> {
         debug_assert!(s >= 0.0 && s <= 1.0);
         Closed01(s)
     }
+
+    #[inline(always)]
+    /// Round the number to 0.0 or 1.0
+    pub fn round(self) -> Closed01<f32> {
+        if self.0 < 0.5 {
+            Closed01::zero()
+        } else {
+            Closed01::one()
+        }
+    }
 }
 
 impl Into<f32> for Closed01<f32> {
@@ -215,4 +225,19 @@ fn test_invert() {
     assert_eq!(b, a.inv());
     assert_eq!(a, b.inv());
     assert_eq!(c, c.inv());
+}
+
+#[test]
+fn test_round() {
+    assert_eq!(Closed01::zero(), Closed01::new(0.0).round());
+    assert_eq!(Closed01::zero(), Closed01::new(0.1).round());
+    assert_eq!(Closed01::zero(), Closed01::new(0.2).round());
+    assert_eq!(Closed01::zero(), Closed01::new(0.3).round());
+    assert_eq!(Closed01::zero(), Closed01::new(0.4).round());
+    assert_eq!(Closed01::zero(), Closed01::new(0.49999).round());
+    assert_eq!(Closed01::one(), Closed01::new(0.5).round());
+    assert_eq!(Closed01::one(), Closed01::new(0.6).round());
+    assert_eq!(Closed01::one(), Closed01::new(0.8).round());
+    assert_eq!(Closed01::one(), Closed01::new(0.9).round());
+    assert_eq!(Closed01::one(), Closed01::new(1.0).round());
 }
