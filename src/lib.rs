@@ -15,18 +15,24 @@ impl Closed01<f32> {
     }
 
     #[inline(always)]
+    fn new_debug_checked(f: f32) -> Closed01<f32> {
+        debug_assert!(f >= 0.0 && f <= 1.0);
+        Closed01(f)
+    }
+
+    #[inline(always)]
     pub fn zero() -> Closed01<f32> {
-        Closed01(0.0)
+        Closed01::new_debug_checked(0.0)
     }
 
     #[inline(always)]
     pub fn center() -> Closed01<f32> {
-        Closed01(0.5)
+        Closed01::new_debug_checked(0.5)
     }
 
     #[inline(always)]
     pub fn one() -> Closed01<f32> {
-        Closed01(1.0)
+        Closed01::new_debug_checked(1.0)
     }
 
     #[inline(always)]
@@ -52,9 +58,7 @@ impl Closed01<f32> {
     #[inline(always)]
     /// Returns the distance between the two numbers.
     pub fn distance(self, other: Closed01<f32>) -> Closed01<f32> {
-        let d = (self.0 - other.0).abs();
-        debug_assert!(d >= 0.0 && d <= 1.0);
-        Closed01(d)
+        Closed01::new_debug_checked((self.0 - other.0).abs())
     }
 
     #[inline(always)]
@@ -66,9 +70,7 @@ impl Closed01<f32> {
     #[inline(always)]
     /// The average of two values.
     pub fn average(self: Closed01<f32>, other: Closed01<f32>) -> Closed01<f32> {
-        let avg = (self.get() + other.get()) / 2.0;
-        debug_assert!(avg >= 0.0 && avg <= 1.0);
-        Closed01(avg)
+        Closed01::new_debug_checked((self.get() + other.get()) / 2.0)
     }
 
     #[inline(always)]
@@ -78,8 +80,7 @@ impl Closed01<f32> {
         if sum > 1.0 {
             sum = 1.0;
         }
-        debug_assert!(sum >= 0.0 && sum <= 1.0);
-        Closed01(sum)
+        Closed01::new_debug_checked(sum)
     }
 
     #[inline(always)]
@@ -89,16 +90,13 @@ impl Closed01<f32> {
         if sub < 0.0 {
             sub = 0.0;
         }
-        debug_assert!(sub >= 0.0 && sub <= 1.0);
-        Closed01(sub)
+        Closed01::new_debug_checked(sub)
     }
 
     #[inline(always)]
     /// Multiplies both numbers
     pub fn mul(self, scalar: Closed01<f32>) -> Closed01<f32> {
-        let s = self.get() * scalar.get();
-        debug_assert!(s >= 0.0 && s <= 1.0);
-        Closed01(s)
+        Closed01::new_debug_checked(self.get() * scalar.get())
     }
 
     #[inline(always)]
@@ -109,25 +107,19 @@ impl Closed01<f32> {
     #[inline(always)]
     /// This scales `self` towards 1.0
     pub fn scale_up(self, other: Closed01<f32>) -> Closed01<f32> {
-        let s = self.0 + (1.0 - self.0) * other.0;
-        debug_assert!(s >= 0.0 && s <= 1.0);
-        Closed01(s)
+        Closed01::new_debug_checked(self.0 + (1.0 - self.0) * other.0)
     }
 
     #[inline(always)]
     /// This scales `self` towards 0.0
     pub fn scale_down(self, other: Closed01<f32>) -> Closed01<f32> {
-        let s = self.0 - self.0 * other.0;
-        debug_assert!(s >= 0.0 && s <= 1.0);
-        Closed01(s)
+        Closed01::new_debug_checked(self.0 - self.0 * other.0)
     }
 
     #[inline(always)]
     /// Invert the number (Mirror at 0.5; 1.0 - number).
     pub fn inv(self) -> Closed01<f32> {
-        let s = 1.0 - self.0;
-        debug_assert!(s >= 0.0 && s <= 1.0);
-        Closed01(s)
+        Closed01::new_debug_checked(1.0 - self.0)
     }
 
     #[inline(always)]
