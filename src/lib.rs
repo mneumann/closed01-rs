@@ -1,43 +1,48 @@
 extern crate rand;
+extern crate nalgebra;
 
 use rand::{Rand, Rng};
 use rand::Closed01 as RandClosed01;
+use std::fmt::Debug;
+use nalgebra::BaseFloat;
 
 /// Encapsulates a floating point number in the range [0, 1] including both endpoints.
 #[derive(Copy, Clone, Debug, PartialEq, PartialOrd)]
-pub struct Closed01<F>(F);
+pub struct Closed01<F>(F) where F: Copy + Clone + Debug + PartialEq + PartialOrd + BaseFloat;
 
-impl Closed01<f32> {
+impl<F> Closed01<F>
+    where F: Copy + Clone + Debug + PartialEq + PartialOrd + BaseFloat
+{
     #[inline(always)]
-    pub fn new(f: f32) -> Closed01<f32> {
-        assert!(f >= 0.0 && f <= 1.0);
+    pub fn new(f: F) -> Self {
+        assert!(f >= F::zero() && f <= F::one());
         Closed01(f)
     }
 
     #[inline(always)]
-    fn new_debug_checked(f: f32) -> Closed01<f32> {
-        debug_assert!(f >= 0.0 && f <= 1.0);
+    fn new_debug_checked(f: F) -> Self {
+        debug_assert!(f >= F::zero() && f <= F::one());
         Closed01(f)
     }
 
     #[inline(always)]
-    pub fn zero() -> Closed01<f32> {
-        Closed01::new_debug_checked(0.0)
+    pub fn zero() -> Self {
+        Closed01::new_debug_checked(F::zero())
     }
 
     #[inline(always)]
-    pub fn center() -> Closed01<f32> {
-        Closed01::new_debug_checked(0.5)
+    pub fn center() -> Self {
+        Closed01::new_debug_checked(F::one() / (F::one() + F::one()))
     }
 
     #[inline(always)]
-    pub fn one() -> Closed01<f32> {
-        Closed01::new_debug_checked(1.0)
+    pub fn one() -> Self {
+        Closed01::new_debug_checked(F::one())
     }
 
     #[inline(always)]
     /// Returns the smaller of the two.
-    pub fn min(self, other: Closed01<f32>) -> Closed01<f32> {
+    pub fn min(self, other: Self) -> Self {
         if self.0 <= other.0 {
             self
         } else {
@@ -47,7 +52,7 @@ impl Closed01<f32> {
 
     #[inline(always)]
     /// Returns the greater of the two.
-    pub fn max(self, other: Closed01<f32>) -> Closed01<f32> {
+    pub fn max(self, other: Self) -> Self {
         if self.0 >= other.0 {
             self
         } else {
@@ -57,75 +62,82 @@ impl Closed01<f32> {
 
     #[inline(always)]
     /// Returns the distance between the two numbers.
-    pub fn distance(self, other: Closed01<f32>) -> Closed01<f32> {
-        Closed01::new_debug_checked((self.0 - other.0).abs())
+    pub fn distance(self, other: Self) -> Self {
+        let dist = self.0 - other.0;
+        if dist < F::zero() {
+            Closed01::new_debug_checked(-dist)
+        } else {
+            Closed01::new_debug_checked(dist)
+        }
     }
 
     #[inline(always)]
-    pub fn get(self) -> f32 {
-        debug_assert!(self.0 >= 0.0 && self.0 <= 1.0);
+    pub fn get(self) -> F {
+        debug_assert!(self.0 >= F::zero() && self.0 <= F::one());
         self.0
     }
 
     #[inline(always)]
     /// The average of two values.
-    pub fn average(self: Closed01<f32>, other: Closed01<f32>) -> Closed01<f32> {
-        Closed01::new_debug_checked((self.get() + other.get()) / 2.0)
+    pub fn average(self: Self, other: Self) -> Self {
+        Closed01::new_debug_checked((self.get() + other.get()) / (F::one() + F::one()))
     }
 
     #[inline(always)]
     /// Saturating add
-    pub fn saturating_add(self, other: Closed01<f32>) -> Closed01<f32> {
-        let mut sum = self.0 + other.0;
-        if sum > 1.0 {
-            sum = 1.0;
+    pub fn saturating_add(self, other: Self) -> Self {
+        let sum = self.0 + other.0;
+        if sum > F::one() {
+            Closed01::new_debug_checked(F::one())
+        } else {
+            Closed01::new_debug_checked(sum)
         }
-        Closed01::new_debug_checked(sum)
     }
 
     #[inline(always)]
     /// Saturating sub
-    pub fn saturating_sub(self, other: Closed01<f32>) -> Closed01<f32> {
-        let mut sub = self.0 - other.0;
-        if sub < 0.0 {
-            sub = 0.0;
+    pub fn saturating_sub(self, other: Self) -> Self {
+        let sub = self.0 - other.0;
+        if sub < F::zero() {
+            Closed01::new_debug_checked(F::zero())
+        } else {
+            Closed01::new_debug_checked(sub)
         }
-        Closed01::new_debug_checked(sub)
     }
 
     #[inline(always)]
     /// Multiplies both numbers
-    pub fn mul(self, scalar: Closed01<f32>) -> Closed01<f32> {
+    pub fn mul(self, scalar: Self) -> Self {
         Closed01::new_debug_checked(self.get() * scalar.get())
     }
 
     #[inline(always)]
-    pub fn approx_eq(self, other: Closed01<f32>, eps: Closed01<f32>) -> bool {
+    pub fn approx_eq(self, other: Self, eps: Self) -> bool {
         self.distance(other) < eps
     }
 
     #[inline(always)]
     /// This scales `self` towards 1.0
-    pub fn scale_up(self, other: Closed01<f32>) -> Closed01<f32> {
-        Closed01::new_debug_checked(self.0 + (1.0 - self.0) * other.0)
+    pub fn scale_up(self, other: Self) -> Self {
+        Closed01::new_debug_checked(self.0 + (F::one() - self.0) * other.0)
     }
 
     #[inline(always)]
     /// This scales `self` towards 0.0
-    pub fn scale_down(self, other: Closed01<f32>) -> Closed01<f32> {
+    pub fn scale_down(self, other: Self) -> Self {
         Closed01::new_debug_checked(self.0 - self.0 * other.0)
     }
 
     #[inline(always)]
     /// Invert the number (Mirror at 0.5; 1.0 - number).
-    pub fn inv(self) -> Closed01<f32> {
-        Closed01::new_debug_checked(1.0 - self.0)
+    pub fn inv(self) -> Self {
+        Closed01::new_debug_checked(F::one() - self.0)
     }
 
     #[inline(always)]
     /// Round the number to 0.0 or 1.0
-    pub fn round(self) -> Closed01<f32> {
-        if self.0 < 0.5 {
+    pub fn round(self) -> Self {
+        if self < Closed01::center() {
             Closed01::zero()
         } else {
             Closed01::one()
@@ -139,9 +151,33 @@ impl Into<f32> for Closed01<f32> {
     }
 }
 
+impl Into<f64> for Closed01<f32> {
+    fn into(self) -> f64 {
+        self.get() as f64
+    }
+}
+
+impl Into<f32> for Closed01<f64> {
+    fn into(self) -> f32 {
+        self.get() as f32
+    }
+}
+
+impl Into<f64> for Closed01<f64> {
+    fn into(self) -> f64 {
+        self.get()
+    }
+}
+
 impl Rand for Closed01<f32> {
-    fn rand<R: Rng>(rng: &mut R) -> Closed01<f32> {
+    fn rand<R: Rng>(rng: &mut R) -> Self {
         Closed01::new(RandClosed01::<f32>::rand(rng).0)
+    }
+}
+
+impl Rand for Closed01<f64> {
+    fn rand<R: Rng>(rng: &mut R) -> Self {
+        Closed01::new(RandClosed01::<f64>::rand(rng).0)
     }
 }
 
@@ -232,4 +268,14 @@ fn test_round() {
     assert_eq!(Closed01::one(), Closed01::new(0.8).round());
     assert_eq!(Closed01::one(), Closed01::new(0.9).round());
     assert_eq!(Closed01::one(), Closed01::new(1.0).round());
+}
+
+#[test]
+fn test_f64_minmax() {
+    let a = Closed01::new(0.4f64);
+    let b = Closed01::new(0.5f64);
+    assert_eq!(a, a.min(b));
+    assert_eq!(a, b.min(a));
+    assert_eq!(b, a.max(b));
+    assert_eq!(b, b.max(a));
 }

@@ -10,3 +10,4 @@ keywords = ["math"]
 [dependencies]
 
 rand = "0.3"
+nalgebra = "0.5.1"
