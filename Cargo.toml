@@ -5,7 +5,8 @@ authors = ["Michael Neumann <mneumann@ntecs.de>"]
 license = "MIT"
 repository = "https://github.com/mneumann/closed01-rs"
 description = "Provides checked floating point operations within the range [0,1]"
-keywords = ["math"]
+keywords = ["math", "numerics"]
+include = ["src/lib.rs", "Cargo.toml", "LICENSE", "README.md"]
 
 [dependencies]
 
