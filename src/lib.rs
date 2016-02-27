@@ -40,8 +40,8 @@ impl<F> Closed01<F>
         Closed01::new_debug_checked(F::one())
     }
 
-    #[inline(always)]
     /// Returns the smaller of the two.
+    #[inline(always)]
     pub fn min(self, other: Self) -> Self {
         if self.0 <= other.0 {
             self
@@ -50,8 +50,8 @@ impl<F> Closed01<F>
         }
     }
 
-    #[inline(always)]
     /// Returns the greater of the two.
+    #[inline(always)]
     pub fn max(self, other: Self) -> Self {
         if self.0 >= other.0 {
             self
@@ -60,8 +60,8 @@ impl<F> Closed01<F>
         }
     }
 
-    #[inline(always)]
     /// Returns the distance between the two numbers.
+    #[inline(always)]
     pub fn distance(self, other: Self) -> Self {
         let dist = self.0 - other.0;
         if dist < F::zero() {
@@ -77,14 +77,14 @@ impl<F> Closed01<F>
         self.0
     }
 
-    #[inline(always)]
     /// The average of two values.
+    #[inline(always)]
     pub fn average(self: Self, other: Self) -> Self {
         Closed01::new_debug_checked((self.get() + other.get()) / (F::one() + F::one()))
     }
 
-    #[inline(always)]
     /// Saturating add
+    #[inline(always)]
     pub fn saturating_add(self, other: Self) -> Self {
         let sum = self.0 + other.0;
         if sum > F::one() {
@@ -94,8 +94,8 @@ impl<F> Closed01<F>
         }
     }
 
-    #[inline(always)]
     /// Saturating sub
+    #[inline(always)]
     pub fn saturating_sub(self, other: Self) -> Self {
         let sub = self.0 - other.0;
         if sub < F::zero() {
@@ -105,8 +105,8 @@ impl<F> Closed01<F>
         }
     }
 
-    #[inline(always)]
     /// Multiplies both numbers
+    #[inline(always)]
     pub fn mul(self, scalar: Self) -> Self {
         Closed01::new_debug_checked(self.get() * scalar.get())
     }
@@ -116,26 +116,26 @@ impl<F> Closed01<F>
         self.distance(other) < eps
     }
 
-    #[inline(always)]
     /// This scales `self` towards 1.0
+    #[inline(always)]
     pub fn scale_up(self, other: Self) -> Self {
         Closed01::new_debug_checked(self.0 + (F::one() - self.0) * other.0)
     }
 
-    #[inline(always)]
     /// This scales `self` towards 0.0
+    #[inline(always)]
     pub fn scale_down(self, other: Self) -> Self {
         Closed01::new_debug_checked(self.0 - self.0 * other.0)
     }
 
-    #[inline(always)]
     /// Invert the number (Mirror at 0.5; 1.0 - number).
+    #[inline(always)]
     pub fn inv(self) -> Self {
         Closed01::new_debug_checked(F::one() - self.0)
     }
 
-    #[inline(always)]
     /// Round the number to 0.0 or 1.0
+    #[inline(always)]
     pub fn round(self) -> Self {
         if self < Closed01::center() {
             Closed01::zero()
