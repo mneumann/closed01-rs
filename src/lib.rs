@@ -1,17 +1,16 @@
-extern crate rand;
-extern crate nalgebra;
-
-use rand::{Rand, Rng};
-use rand::Closed01 as RandClosed01;
+use num_traits::float::Float;
+use num_traits::identities::{One, Zero};
 use std::fmt::Debug;
-use nalgebra::BaseFloat;
 
 /// Encapsulates a floating point number in the range [0, 1] including both endpoints.
 #[derive(Copy, Clone, Debug, PartialEq, PartialOrd)]
-pub struct Closed01<F>(F) where F: Copy + Clone + Debug + PartialEq + PartialOrd + BaseFloat;
+pub struct Closed01<F>(F)
+where
+    F: Copy + Clone + Debug + PartialEq + PartialOrd + Float + Zero + One;
 
 impl<F> Closed01<F>
-    where F: Copy + Clone + Debug + PartialEq + PartialOrd + BaseFloat
+where
+    F: Copy + Clone + Debug + PartialEq + PartialOrd + Float + Zero + One,
 {
     #[inline(always)]
     pub fn new(f: F) -> Self {
@@ -169,18 +168,6 @@ impl Into<f64> for Closed01<f64> {
     }
 }
 
-impl Rand for Closed01<f32> {
-    fn rand<R: Rng>(rng: &mut R) -> Self {
-        Closed01::new(RandClosed01::<f32>::rand(rng).0)
-    }
-}
-
-impl Rand for Closed01<f64> {
-    fn rand<R: Rng>(rng: &mut R) -> Self {
-        Closed01::new(RandClosed01::<f64>::rand(rng).0)
-    }
-}
-
 #[test]
 fn test_into() {
     assert_eq!(0.5f32, Closed01::new(0.5).into());
@@ -248,7 +235,6 @@ fn test_invert() {
     assert_eq!(a, a.inv().inv());
     assert_eq!(b, b.inv().inv());
     assert_eq!(c, c.inv().inv());
-
 
     assert_eq!(b, a.inv());
     assert_eq!(a, b.inv());
